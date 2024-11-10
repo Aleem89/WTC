@@ -11,10 +11,10 @@ export default function Home() {
     <div className="grid grid-rows-[auto_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-8 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <header className="w-full flex justify-center pt-4 bg-[#000000] dark:bg-[#000000] rounded-lg">
         <Image
-          src="/crime1.png"
+          src="/crimetr.png"
           alt="Crime Map Header"
-          width={700}
-          height={150}
+          width={500}
+          height={100}
           priority
         />
       </header>

@@ -30,8 +30,10 @@ function Map() {
       // Add the data source
       map.current.addSource('crimes', {
         type: 'geojson',
-        data: '/crime_data.geojson'
+        data: '/cleaned_crime_data.geojson'
       });
+
+      
 
       // Add a layer showing the crime points
       map.current.addLayer({
@@ -39,17 +41,25 @@ function Map() {
         type: 'circle',
         source: 'crimes',
         paint: {
-          'circle-radius': 6,
-          'circle-color': '#ff0000',
-          'circle-opacity': 0.7,
-          // Optional: make points larger when zooming in
           'circle-radius': [
             'interpolate',
             ['linear'],
             ['zoom'],
-            8, 3,    // zoom level 8, circle radius 3px
-            15, 8    // zoom level 15, circle radius 8px
+            8, 4,
+            15, 8
           ],
+          'circle-color': [
+            'match',
+            ['get', 'Nature Of Call'],
+            'THEFT', '#2ecc71',          // Green for theft
+            'BURGLARY', '#e74c3c',       // Red for burglary
+            'ASSAULT', '#e67e22',        // Orange for assault
+            'ROBBERY', '#9b59b6',        // Purple for robbery
+            '#3498db'                    // Default blue for others
+          ],
+          'circle-stroke-width': 2,
+          'circle-stroke-color': '#ffffff',
+          'circle-opacity': 0.8
         }
       });
 
@@ -60,14 +70,14 @@ function Map() {
 
         // Format the popup content
         const popupContent = `
-          <div class="p-2">
-            <h3 class="font-bold mb-2">${properties.description}</h3>
-            <p><strong>Case:</strong> ${properties.caseNumber}</p>
-            <p><strong>Date:</strong> ${properties.reportedDate}</p>
-            <p><strong>Location:</strong> ${properties.address}</p>
-            <p><strong>Nature:</strong> ${properties.natureOfCall}</p>
-          </div>
-        `;
+        <div class="p-2">
+          <h3 class="font-bold mb-2">${properties.Description || 'No description available'}</h3>
+          <p><strong>Case:</strong> ${properties['Case Number'] || 'N/A'}</p>
+          <p><strong>Date:</strong> ${properties['Reported Date'] || 'N/A'}</p>
+          <p><strong>Location:</strong> ${properties['Block Address'] || 'N/A'}</p>
+          <p><strong>Nature:</strong> ${properties['Nature Of Call'] || 'N/A'}</p>
+        </div>
+      `;
 
         // Create and show the popup
         new mapboxgl.Popup()
