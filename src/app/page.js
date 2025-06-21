@@ -24,23 +24,25 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-r from-red-900/20 to-orange-900/20"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,0,0,0.1),transparent_50%)]"></div>
 
-        <div className="relative z-10 container mx-auto px-6 py-4">
-          <div className="text-center">
-            <div className="mb-6">
+        <div className="relative z-10 container mx-auto px-6 py-3">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex-shrink-0">
               <Image
                 src="/crimetr.png"
                 alt="Crime Map Header"
-                width={500}
-                height={100}
+                width={400}
+                height={80}
                 priority
-                className="mx-auto filter drop-shadow-2xl"
+                className="filter drop-shadow-2xl md:w-auto w-full max-w-sm"
               />
             </div>
-            <p className="text-gray-300 text-lg max-w-2xl mx-auto leading-relaxed">
-              Real-time crime data visualization for Texas communities. Track
-              incidents, analyze patterns, and stay informed about safety in
-              your area.
-            </p>
+            <div className="flex-1 text-center">
+              <p className="text-gray-300 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+                Real-time crime data visualization for Texas communities. Track
+                incidents, analyze patterns, and stay informed about safety in
+                your area.
+              </p>
+            </div>
           </div>
         </div>
       </header>
@@ -63,7 +65,7 @@ export default function Home() {
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                   <span className="text-green-400 text-sm font-medium">
-                    Live Data
+                    {/* Live Data */}
                   </span>
                 </div>
               </div>
