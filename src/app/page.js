@@ -24,7 +24,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-r from-red-900/20 to-orange-900/20"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,0,0,0.1),transparent_50%)]"></div>
 
-        <div className="relative z-10 container mx-auto px-6 py-8">
+        <div className="relative z-10 container mx-auto px-6 py-4">
           <div className="text-center">
             <div className="mb-6">
               <Image
@@ -45,47 +45,8 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-6 pb-12">
-        {/* Stats Bar */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-xl border border-gray-700 shadow-xl">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-red-400 mb-2"></div>
-              <div className="text-gray-300 text-sm uppercase tracking-wider">
-                Recent Activity
-              </div>
-            </div>
-          </div>
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-xl border border-gray-700 shadow-xl">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-orange-400 mb-2">
-                Live
-              </div>
-              <div className="text-gray-300 text-sm uppercase tracking-wider">
-                Data Feed
-              </div>
-            </div>
-          </div>
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-xl border border-gray-700 shadow-xl">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-yellow-400 mb-2">TX</div>
-              <div className="text-gray-300 text-sm uppercase tracking-wider">
-                Statewide
-              </div>
-            </div>
-          </div>
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-xl border border-gray-700 shadow-xl">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-400 mb-2">Safe</div>
-              <div className="text-gray-300 text-sm uppercase tracking-wider">
-                Stay Informed
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Map Section */}
+      {/* Map Section */}
+      <main className="w-full px-4 pb-12">
         <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-1 rounded-2xl shadow-2xl border border-gray-700">
           <div className="bg-gradient-to-br from-black to-gray-900 rounded-xl overflow-hidden">
             {/* Map Header */}
@@ -109,14 +70,14 @@ export default function Home() {
             </div>
 
             {/* Map Container */}
-            <div className="h-[600px] w-full relative">
+            <div className="w-full relative">
               <DynamicMap />
             </div>
           </div>
         </div>
 
         {/* Legend Section */}
-        <div className="mt-8 bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-xl border border-gray-700 shadow-xl">
+        <div className="mt-8 mx-auto max-w-7xl bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-xl border border-gray-700 shadow-xl">
           <h3 className="text-lg font-bold text-white mb-4">
             Crime Type Legend
           </h3>

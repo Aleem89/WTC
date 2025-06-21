@@ -85,7 +85,8 @@ body {
 }
 
 .map-container {
-    height: 600px;
+    height: 80vh;
+    min-height: 700px;
     width: 100%;
     position: relative;
     border-radius: 12px;
@@ -239,6 +240,7 @@ input[type="checkbox"]:disabled {
     }
 
     .map-container {
-        height: 500px;
+        height: 70vh;
+        min-height: 500px;
     }
 }
