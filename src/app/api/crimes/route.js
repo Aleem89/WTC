@@ -43,13 +43,13 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const timeRange = searchParams.get("timeRange") || "3M";
+    const crimeTypes = searchParams.get("crimeTypes");
 
     const db = await openDb();
     const [startDate, endDate] = getDateRange(timeRange);
 
-    // Query crime data within date range and with valid coordinates
-    const crimes = await db.all(
-      `
+    // Build the query based on crime type filters
+    let query = `
       SELECT
         case_number,
         reported_date,
@@ -69,10 +69,44 @@ export async function GET(request) {
         AND reported_date <= ?
         AND latitude IS NOT NULL
         AND longitude IS NOT NULL
-      ORDER BY reported_date DESC
-    `,
-      [startDate, endDate],
-    );
+    `;
+
+    let queryParams = [startDate, endDate];
+
+    // Add crime type filtering if specified
+    if (crimeTypes && crimeTypes !== "ALL") {
+      const selectedTypes = crimeTypes.split(",");
+      const crimeConditions = [];
+
+      selectedTypes.forEach((type) => {
+        switch (type) {
+          case "MURDER":
+            crimeConditions.push("nature_of_call LIKE '%MURDER%'");
+            break;
+          case "THEFT":
+            crimeConditions.push("nature_of_call LIKE '%THEFT%'");
+            break;
+          case "BURGLARY":
+            crimeConditions.push("nature_of_call LIKE '%BURGLARY%'");
+            break;
+          case "ASSAULT":
+            crimeConditions.push("nature_of_call LIKE '%ASSAULT%'");
+            break;
+          case "DWI":
+            crimeConditions.push("nature_of_call LIKE '%DWI%'");
+            break;
+        }
+      });
+
+      if (crimeConditions.length > 0) {
+        query += ` AND (${crimeConditions.join(" OR ")})`;
+      }
+    }
+
+    query += ` ORDER BY reported_date DESC`;
+
+    // Query crime data within date range and with valid coordinates
+    const crimes = await db.all(query, queryParams);
 
     await db.close();
 
