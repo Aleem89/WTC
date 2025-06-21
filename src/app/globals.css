@@ -232,6 +232,71 @@ input[type="checkbox"]:disabled {
     cursor: not-allowed;
 }
 
+/* Mapbox Geocoder styling for dark theme */
+.mapboxgl-ctrl-geocoder {
+    background: rgba(17, 24, 39, 0.9) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(75, 85, 99, 0.3) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5) !important;
+}
+
+.mapboxgl-ctrl-geocoder input[type="text"] {
+    background: transparent !important;
+    color: #e5e7eb !important;
+    border: none !important;
+    font-size: 14px !important;
+}
+
+.mapboxgl-ctrl-geocoder input[type="text"]::placeholder {
+    color: #9ca3af !important;
+}
+
+.mapboxgl-ctrl-geocoder .mapboxgl-ctrl-geocoder--icon {
+    fill: #9ca3af !important;
+}
+
+.mapboxgl-ctrl-geocoder .mapboxgl-ctrl-geocoder--button {
+    background: transparent !important;
+    border: none !important;
+}
+
+.mapboxgl-ctrl-geocoder .mapboxgl-ctrl-geocoder--button:hover {
+    background: rgba(75, 85, 99, 0.3) !important;
+}
+
+.mapboxgl-ctrl-geocoder .suggestions {
+    background: rgba(17, 24, 39, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(75, 85, 99, 0.3) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.6) !important;
+}
+
+.mapboxgl-ctrl-geocoder .suggestions > li {
+    color: #e5e7eb !important;
+    border-bottom: 1px solid rgba(75, 85, 99, 0.2) !important;
+}
+
+.mapboxgl-ctrl-geocoder .suggestions > li:hover,
+.mapboxgl-ctrl-geocoder .suggestions > li.active {
+    background: rgba(59, 130, 246, 0.2) !important;
+    color: #ffffff !important;
+}
+
+.mapboxgl-ctrl-geocoder .suggestions > li > a {
+    color: inherit !important;
+}
+
+.mapboxgl-ctrl-geocoder .suggestions .mapboxgl-ctrl-geocoder--suggestion-title {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+.mapboxgl-ctrl-geocoder .suggestions .mapboxgl-ctrl-geocoder--suggestion-address {
+    color: #9ca3af !important;
+}
+
 /* Responsive design improvements */
 @media (max-width: 768px) {
     .container {
@@ -242,5 +307,15 @@ input[type="checkbox"]:disabled {
     .map-container {
         height: 70vh;
         min-height: 500px;
+    }
+
+    /* Geocoder responsive adjustments */
+    .mapboxgl-ctrl-geocoder {
+        width: 200px !important;
+        font-size: 12px !important;
+    }
+
+    .mapboxgl-ctrl-geocoder input[type="text"] {
+        font-size: 12px !important;
     }
 }

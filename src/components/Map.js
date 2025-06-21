@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import mapboxgl from "mapbox-gl";
+import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "mapbox-gl/dist/mapbox-gl.css";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
 const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 mapboxgl.accessToken = mapboxToken;
@@ -169,6 +171,20 @@ function Map() {
       }
     });
 
+    // Add geocoder
+    const geocoder = new MapboxGeocoder({
+      accessToken: mapboxToken,
+      mapboxgl: mapboxgl,
+      placeholder: "Search for places...",
+      bbox: [-99.0, 25.8, -93.5, 36.5], // Texas bounds
+      proximity: {
+        longitude: lng,
+        latitude: lat
+      },
+      marker: false // We'll handle markers ourselves
+    });
+
+    map.current.addControl(geocoder, "top-left");
     map.current.addControl(new mapboxgl.NavigationControl(), "top-right");
 
     map.current.on("move", () => {
@@ -206,7 +222,7 @@ function Map() {
 
   return (
     <div className="relative">
-      <div className="absolute top-0 left-0 bg-black bg-opacity-70 text-white p-2 z-10 m-2 rounded flex flex-col gap-2">
+      <div className="absolute top-14 left-0 bg-black bg-opacity-70 text-white p-2 z-10 m-2 rounded flex flex-col gap-2">
         <div>
           Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
         </div>
@@ -234,8 +250,8 @@ function Map() {
         )}
       </div>
 
-      {/* Nature of Call Filter - Top Right */}
-      <div className="absolute top-0 right-0 bg-black bg-opacity-70 text-white p-3 z-10 m-2 rounded max-w-xs mt-12">
+      {/* Nature of Call Filter - Top Right (Left of Zoom Controls) */}
+      <div className="absolute top-0 right-16 bg-black bg-opacity-70 text-white p-3 z-10 m-2 rounded max-w-xs mt-2">
         <div className="flex flex-col gap-2">
           <label className="text-sm font-semibold">Nature of Call:</label>
 
