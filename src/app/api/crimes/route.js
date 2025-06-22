@@ -32,7 +32,7 @@ function getDateRange(range) {
       startDate.setFullYear(endDate.getFullYear() - 1);
       break;
     default:
-      startDate.setMonth(endDate.getMonth() - 3);
+      startDate.setMonth(endDate.getMonth() - 1);
   }
 
   return [startDate.toISOString(), endDate.toISOString()];
@@ -42,7 +42,7 @@ function getDateRange(range) {
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const timeRange = searchParams.get("timeRange") || "3M";
+    const timeRange = searchParams.get("timeRange") || "1M";
     const crimeTypes = searchParams.get("crimeTypes");
 
     const db = await openDb();
@@ -94,6 +94,9 @@ export async function GET(request) {
             break;
           case "DWI":
             crimeConditions.push("nature_of_call LIKE '%DWI%'");
+            break;
+          case "AUTO THEFT":
+            crimeConditions.push("nature_of_call LIKE '%AUTO THEFT%'");
             break;
         }
       });

@@ -20,6 +20,7 @@ const TIME_RANGES = {
 // Crime type options
 const CRIME_TYPES = [
   { value: "MURDER", label: "Murder" },
+  { value: "AUTO THEFT", label: "Auto Theft" },
   { value: "THEFT", label: "Theft" },
   { value: "BURGLARY", label: "Burglary" },
   { value: "ASSAULT", label: "Assault" },
@@ -31,8 +32,8 @@ function Map() {
   const map = useRef(null);
   const [lng, setLng] = useState(-97.32);
   const [lat, setLat] = useState(32.72541);
-  const [zoom, setZoom] = useState(11);
-  const [timeRange, setTimeRange] = useState("3M");
+  const [zoom, setZoom] = useState(9);
+  const [timeRange, setTimeRange] = useState("1M");
   const [selectedCrimeTypes, setSelectedCrimeTypes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -128,6 +129,17 @@ function Map() {
             "circle-opacity": 0.8,
           },
         });
+
+        // Move the crime points layer below label layers to prevent hiding city names
+        // Find the first symbol layer (labels) and move crime points before it
+        const layers = map.current.getStyle().layers;
+        const labelLayerId = layers.find(
+          (layer) => layer.type === 'symbol' && layer.layout && layer.layout['text-field']
+        )?.id;
+        
+        if (labelLayerId) {
+          map.current.moveLayer("crime-points", labelLayerId);
+        }
 
         // Add popup on click
         map.current.on("click", "crime-points", (e) => {
@@ -232,8 +244,6 @@ function Map() {
           </div>
         )}
       </div>
-
-
 
       {/* Time Range Filter - Top Right (Left of Nature of Call Filter) */}
       <div className="absolute top-0 right-64 bg-black bg-opacity-70 text-white p-2 z-10 m-2 rounded mt-2">

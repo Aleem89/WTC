@@ -231,7 +231,6 @@ input[type="checkbox"]:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
-
 /* Mapbox Geocoder styling for dark theme */
 .mapboxgl-ctrl-geocoder {
     background: rgba(17, 24, 39, 0.9) !important;
@@ -267,6 +266,7 @@ input[type="checkbox"]:disabled {
     background: rgba(75, 85, 99, 0.3) !important;
 }
 
+/* Suggestions container */
 .mapboxgl-ctrl-geocoder .suggestions {
     background: rgba(17, 24, 39, 0.95) !important;
     backdrop-filter: blur(10px);
@@ -275,30 +275,77 @@ input[type="checkbox"]:disabled {
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.6) !important;
 }
 
-.mapboxgl-ctrl-geocoder .suggestions > li {
+/* Individual suggestion items - more specific selectors */
+.mapboxgl-ctrl-geocoder .suggestions > li,
+.mapboxgl-ctrl-geocoder .suggestions li {
+    background: transparent !important;
     color: #e5e7eb !important;
     border-bottom: 1px solid rgba(75, 85, 99, 0.2) !important;
 }
 
+/* Hover and active states with higher specificity */
 .mapboxgl-ctrl-geocoder .suggestions > li:hover,
-.mapboxgl-ctrl-geocoder .suggestions > li.active {
+.mapboxgl-ctrl-geocoder .suggestions > li.active,
+.mapboxgl-ctrl-geocoder .suggestions li:hover,
+.mapboxgl-ctrl-geocoder .suggestions li.active,
+.mapboxgl-ctrl-geocoder .suggestions > li[class*="active"],
+.mapboxgl-ctrl-geocoder .suggestions li[class*="active"] {
     background: rgba(59, 130, 246, 0.2) !important;
     color: #ffffff !important;
 }
 
-.mapboxgl-ctrl-geocoder .suggestions > li > a {
+/* Links within suggestions */
+.mapboxgl-ctrl-geocoder .suggestions > li > a,
+.mapboxgl-ctrl-geocoder .suggestions li > a,
+.mapboxgl-ctrl-geocoder .suggestions a {
     color: inherit !important;
+    text-decoration: none !important;
 }
 
-.mapboxgl-ctrl-geocoder .suggestions .mapboxgl-ctrl-geocoder--suggestion-title {
+/* Suggestion title styling */
+.mapboxgl-ctrl-geocoder .suggestions .mapboxgl-ctrl-geocoder--suggestion-title,
+.mapboxgl-ctrl-geocoder
+    .suggestions
+    li
+    .mapboxgl-ctrl-geocoder--suggestion-title {
     color: #ffffff !important;
     font-weight: 600 !important;
 }
 
+/* Suggestion address styling */
 .mapboxgl-ctrl-geocoder
     .suggestions
+    .mapboxgl-ctrl-geocoder--suggestion-address,
+.mapboxgl-ctrl-geocoder
+    .suggestions
+    li
     .mapboxgl-ctrl-geocoder--suggestion-address {
     color: #9ca3af !important;
+}
+
+/* Additional overrides for stubborn white backgrounds */
+.mapboxgl-ctrl-geocoder .suggestions > li:first-child,
+.mapboxgl-ctrl-geocoder .suggestions li:first-child {
+    background: transparent !important;
+    color: #e5e7eb !important;
+}
+
+.mapboxgl-ctrl-geocoder .suggestions > li:first-child:hover,
+.mapboxgl-ctrl-geocoder .suggestions > li:first-child.active,
+.mapboxgl-ctrl-geocoder .suggestions li:first-child:hover,
+.mapboxgl-ctrl-geocoder .suggestions li:first-child.active {
+    background: rgba(59, 130, 246, 0.2) !important;
+    color: #ffffff !important;
+}
+
+/* Force override any remaining white backgrounds */
+.mapboxgl-ctrl-geocoder .suggestions * {
+    background-color: transparent !important;
+}
+
+.mapboxgl-ctrl-geocoder .suggestions > li *,
+.mapboxgl-ctrl-geocoder .suggestions li * {
+    color: inherit !important;
 }
 
 /* Responsive design improvements */
