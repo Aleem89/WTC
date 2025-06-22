@@ -179,9 +179,9 @@ function Map() {
       bbox: [-99.0, 25.8, -93.5, 36.5], // Texas bounds
       proximity: {
         longitude: lng,
-        latitude: lat
+        latitude: lat,
       },
-      marker: false // We'll handle markers ourselves
+      marker: true, // We'll handle markers ourselves
     });
 
     map.current.addControl(geocoder, "top-left");
@@ -222,32 +222,41 @@ function Map() {
 
   return (
     <div className="relative">
-      <div className="absolute top-14 left-0 bg-black bg-opacity-70 text-white p-2 z-10 m-2 rounded flex flex-col gap-2">
+      <div className="absolute top-0 left-0 bg-black bg-opacity-70 text-white p-2 z-10 m-2 rounded flex flex-col gap-2">
         <div>
           Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
-        </div>
-        <div className="flex gap-2 items-center">
-          {Object.entries(TIME_RANGES).map(([value, label]) => (
-            <button
-              key={value}
-              onClick={() => setTimeRange(value)}
-              disabled={loading}
-              className={`px-3 py-1 rounded transition-colors ${
-                timeRange === value
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-700 hover:bg-gray-600"
-              } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-            >
-              {label}
-            </button>
-          ))}
-          {loading && <div className="text-sm text-gray-300">Loading...</div>}
         </div>
         {error && (
           <div className="text-sm text-red-400 bg-red-900 bg-opacity-50 p-2 rounded">
             {error}
           </div>
         )}
+      </div>
+
+
+
+      {/* Time Range Filter - Top Right (Left of Nature of Call Filter) */}
+      <div className="absolute top-0 right-64 bg-black bg-opacity-70 text-white p-2 z-10 m-2 rounded mt-2">
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-semibold">Time Range:</label>
+          <div className="flex gap-2 items-center flex-wrap">
+            {Object.entries(TIME_RANGES).map(([value, label]) => (
+              <button
+                key={value}
+                onClick={() => setTimeRange(value)}
+                disabled={loading}
+                className={`px-3 py-1 rounded transition-colors ${
+                  timeRange === value
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-700 hover:bg-gray-600"
+                } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                {label}
+              </button>
+            ))}
+            {loading && <div className="text-sm text-gray-300">Loading...</div>}
+          </div>
+        </div>
       </div>
 
       {/* Nature of Call Filter - Top Right (Left of Zoom Controls) */}

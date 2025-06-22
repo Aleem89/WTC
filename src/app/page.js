@@ -83,29 +83,47 @@ export default function Home() {
           <h3 className="text-lg font-bold text-white mb-4">
             Crime Type Legend
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             <div className="flex items-center space-x-3">
-              <div className="w-4 h-4 bg-red-500 rounded-full"></div>
-              <span className="text-gray-300 text-sm">Violent Crime</span>
+              <div
+                className="w-4 h-4 rounded-full"
+                style={{ backgroundColor: "#DC143C" }}
+              ></div>
+              <span className="text-gray-300 text-sm">Murder</span>
             </div>
             <div className="flex items-center space-x-3">
-              <div className="w-4 h-4 bg-orange-500 rounded-full"></div>
-              <span className="text-gray-300 text-sm">Property Crime</span>
+              <div
+                className="w-4 h-4 rounded-full"
+                style={{ backgroundColor: "#e74c3c" }}
+              ></div>
+              <span className="text-gray-300 text-sm">Burglary</span>
             </div>
             <div className="flex items-center space-x-3">
-              <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
-              <span className="text-gray-300 text-sm">Drug Related</span>
+              <div
+                className="w-4 h-4 rounded-full"
+                style={{ backgroundColor: "#e67e22" }}
+              ></div>
+              <span className="text-gray-300 text-sm">Assault</span>
             </div>
             <div className="flex items-center space-x-3">
-              <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
-              <span className="text-gray-300 text-sm">Traffic</span>
+              <div
+                className="w-4 h-4 rounded-full"
+                style={{ backgroundColor: "#9b59b6" }}
+              ></div>
+              <span className="text-gray-300 text-sm">Robbery</span>
             </div>
             <div className="flex items-center space-x-3">
-              <div className="w-4 h-4 bg-purple-500 rounded-full"></div>
-              <span className="text-gray-300 text-sm">Fraud</span>
+              <div
+                className="w-4 h-4 rounded-full"
+                style={{ backgroundColor: "#2ecc71" }}
+              ></div>
+              <span className="text-gray-300 text-sm">Theft</span>
             </div>
             <div className="flex items-center space-x-3">
-              <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+              <div
+                className="w-4 h-4 rounded-full"
+                style={{ backgroundColor: "#3498db" }}
+              ></div>
               <span className="text-gray-300 text-sm">Other</span>
             </div>
           </div>
