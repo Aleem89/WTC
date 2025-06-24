@@ -371,4 +371,97 @@ input[type="checkbox"]:disabled {
     .mapboxgl-ctrl-geocoder input[type="text"] {
         font-size: 12px !important;
     }
+
+    /* Mobile filter positioning adjustments */
+    .mobile-filter-container {
+        position: absolute;
+        right: 8px;
+        z-index: 10;
+        max-width: 200px;
+        min-width: 180px;
+    }
+
+    /* Ensure mobile filters don't overlap with map controls */
+    .mapboxgl-ctrl-top-right {
+        margin-top: 16px;
+        margin-right: 8px;
+    }
+
+    /* Mobile collapsible filter animations */
+    .mobile-filter-content {
+        transition:
+            max-height 0.3s ease-in-out,
+            opacity 0.2s ease-in-out;
+        overflow: hidden;
+    }
+
+    /* Mobile filter button styling */
+    .mobile-filter-toggle {
+        width: 100%;
+        text-align: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        touch-action: manipulation;
+    }
+
+    /* Improve mobile filter readability */
+    .mobile-filter-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+    }
+
+    /* Mobile checkbox adjustments */
+    .mobile-checkbox {
+        width: 16px !important;
+        height: 16px !important;
+        min-width: 16px;
+        min-height: 16px;
+        touch-action: manipulation;
+    }
+
+    /* Mobile filter text sizing */
+    .mobile-filter-text {
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    /* Prevent mobile filters from being too wide */
+    .mobile-filter-container button {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        touch-action: manipulation;
+    }
+
+    /* Mobile filter smooth positioning */
+    .mobile-filter-positioned {
+        transition: top 0.3s ease-in-out;
+    }
+
+    /* Better mobile filter shadows and borders */
+    .mobile-filter-panel {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+        border: 1px solid rgba(75, 85, 99, 0.4);
+    }
+
+    /* Touch-friendly mobile buttons */
+    .mobile-touch-button {
+        min-height: 44px;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Mobile filter spacing improvements */
+    .mobile-filter-spacing {
+        padding: 12px;
+    }
+
+    /* Ensure mobile filters stay within viewport */
+    .mobile-filter-viewport {
+        max-height: 60vh;
+        overflow-y: auto;
+    }
 }
