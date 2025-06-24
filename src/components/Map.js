@@ -37,6 +37,9 @@ function Map() {
   const [selectedCrimeTypes, setSelectedCrimeTypes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTimeFilterOpen, setIsTimeFilterOpen] = useState(false);
+  const [isCrimeFilterOpen, setIsCrimeFilterOpen] = useState(false);
 
   // Function to fetch crime data from API
   const fetchCrimeData = useCallback(async (range, types = []) => {
@@ -78,6 +81,18 @@ function Map() {
     },
     [fetchCrimeData],
   );
+
+  // Mobile detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
     if (map.current) return;
@@ -134,9 +149,12 @@ function Map() {
         // Find the first symbol layer (labels) and move crime points before it
         const layers = map.current.getStyle().layers;
         const labelLayerId = layers.find(
-          (layer) => layer.type === 'symbol' && layer.layout && layer.layout['text-field']
+          (layer) =>
+            layer.type === "symbol" &&
+            layer.layout &&
+            layer.layout["text-field"],
         )?.id;
-        
+
         if (labelLayerId) {
           map.current.moveLayer("crime-points", labelLayerId);
         }
@@ -234,90 +252,213 @@ function Map() {
 
   return (
     <div className="relative">
-      <div className="absolute top-0 left-0 bg-black bg-opacity-70 text-white p-2 z-10 m-2 rounded flex flex-col gap-2">
-        <div>
-          Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
-        </div>
-        {error && (
-          <div className="text-sm text-red-400 bg-red-900 bg-opacity-50 p-2 rounded">
-            {error}
+      {/* Desktop Layout */}
+      {!isMobile && (
+        <>
+          <div className="absolute top-0 left-0 bg-black bg-opacity-70 text-white p-2 z-10 m-2 rounded flex flex-col gap-2">
+            <div>
+              Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
+            </div>
+            {error && (
+              <div className="text-sm text-red-400 bg-red-900 bg-opacity-50 p-2 rounded">
+                {error}
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
-      {/* Time Range Filter - Top Right (Left of Nature of Call Filter) */}
-      <div className="absolute top-0 right-64 bg-black bg-opacity-70 text-white p-2 z-10 m-2 rounded mt-2">
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold">Time Range:</label>
-          <div className="flex gap-2 items-center flex-wrap">
-            {Object.entries(TIME_RANGES).map(([value, label]) => (
+          {/* Time Range Filter - Top Right (Left of Nature of Call Filter) */}
+          <div className="absolute top-0 right-64 bg-black bg-opacity-70 text-white p-2 z-10 m-2 rounded mt-2">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold">Time Range:</label>
+              <div className="flex gap-2 items-center flex-wrap">
+                {Object.entries(TIME_RANGES).map(([value, label]) => (
+                  <button
+                    key={value}
+                    onClick={() => setTimeRange(value)}
+                    disabled={loading}
+                    className={`px-3 py-1 rounded transition-colors ${
+                      timeRange === value
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-700 hover:bg-gray-600"
+                    } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                  >
+                    {label}
+                  </button>
+                ))}
+                {loading && (
+                  <div className="text-sm text-gray-300">Loading...</div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Nature of Call Filter - Top Right (Left of Zoom Controls) */}
+          <div className="absolute top-0 right-16 bg-black bg-opacity-70 text-white p-3 z-10 m-2 rounded max-w-xs mt-2">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold">Nature of Call:</label>
+
+              {/* Select All / Deselect All Button */}
               <button
-                key={value}
-                onClick={() => setTimeRange(value)}
+                onClick={handleSelectAll}
                 disabled={loading}
-                className={`px-3 py-1 rounded transition-colors ${
-                  timeRange === value
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-700 hover:bg-gray-600"
-                } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`px-2 py-1 text-xs rounded bg-blue-600 hover:bg-blue-700 transition-colors ${
+                  loading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
-                {label}
+                {selectedCrimeTypes.length === CRIME_TYPES.length
+                  ? "Deselect All"
+                  : "Select All"}
               </button>
-            ))}
-            {loading && <div className="text-sm text-gray-300">Loading...</div>}
+
+              {/* Crime Type Checkboxes */}
+              <div className="flex flex-col gap-1">
+                {CRIME_TYPES.map((crimeType) => (
+                  <label
+                    key={crimeType.value}
+                    className="flex items-center gap-2 text-sm cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedCrimeTypes.includes(crimeType.value)}
+                      onChange={() => handleCrimeTypeChange(crimeType.value)}
+                      disabled={loading}
+                      className={`w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2 ${
+                        loading ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
+                    />
+                    <span className={loading ? "opacity-50" : ""}>
+                      {crimeType.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
+
+              {/* Show count of selected types */}
+              <div className="text-xs text-gray-300 mt-1">
+                {selectedCrimeTypes.length === 0
+                  ? "Showing all crime types"
+                  : `Showing ${selectedCrimeTypes.length} of ${CRIME_TYPES.length} types`}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
 
-      {/* Nature of Call Filter - Top Right (Left of Zoom Controls) */}
-      <div className="absolute top-0 right-16 bg-black bg-opacity-70 text-white p-3 z-10 m-2 rounded max-w-xs mt-2">
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold">Nature of Call:</label>
+      {/* Mobile Layout */}
+      {isMobile && (
+        <>
+          {/* Error display for mobile */}
+          {error && (
+            <div className="absolute top-2 left-2 right-2 text-sm text-red-400 bg-red-900 bg-opacity-50 p-2 rounded z-10">
+              {error}
+            </div>
+          )}
 
-          {/* Select All / Deselect All Button */}
-          <button
-            onClick={handleSelectAll}
-            disabled={loading}
-            className={`px-2 py-1 text-xs rounded bg-blue-600 hover:bg-blue-700 transition-colors ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            {selectedCrimeTypes.length === CRIME_TYPES.length
-              ? "Deselect All"
-              : "Select All"}
-          </button>
+          {/* Nature of Call Filter - Mobile (Collapsible, positioned below zoom controls) */}
+          <div className="absolute top-20 right-2 bg-black bg-opacity-80 text-white rounded-lg z-10 min-w-48 shadow-lg border border-gray-700">
+            <button
+              onClick={() => setIsCrimeFilterOpen(!isCrimeFilterOpen)}
+              className="w-full px-3 py-2 text-sm font-semibold bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between touch-manipulation"
+            >
+              <span>Nature of Call</span>
+              <span className="text-xs font-bold">
+                {isCrimeFilterOpen ? "▲" : "▼"}
+              </span>
+            </button>
 
-          {/* Crime Type Checkboxes */}
-          <div className="flex flex-col gap-1">
-            {CRIME_TYPES.map((crimeType) => (
-              <label
-                key={crimeType.value}
-                className="flex items-center gap-2 text-sm cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedCrimeTypes.includes(crimeType.value)}
-                  onChange={() => handleCrimeTypeChange(crimeType.value)}
+            {isCrimeFilterOpen && (
+              <div className="p-3 border-t border-gray-600 bg-gray-800 rounded-b-lg">
+                {/* Select All / Deselect All Button */}
+                <button
+                  onClick={handleSelectAll}
                   disabled={loading}
-                  className={`w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2 ${
+                  className={`w-full px-2 py-2 text-xs rounded-md bg-blue-600 hover:bg-blue-700 transition-colors mb-3 touch-manipulation ${
                     loading ? "opacity-50 cursor-not-allowed" : ""
                   }`}
-                />
-                <span className={loading ? "opacity-50" : ""}>
-                  {crimeType.label}
-                </span>
-              </label>
-            ))}
+                >
+                  {selectedCrimeTypes.length === CRIME_TYPES.length
+                    ? "Deselect All"
+                    : "Select All"}
+                </button>
+
+                {/* Crime Type Checkboxes */}
+                <div className="flex flex-col gap-2">
+                  {CRIME_TYPES.map((crimeType) => (
+                    <label
+                      key={crimeType.value}
+                      className="flex items-center gap-3 text-xs cursor-pointer py-1 touch-manipulation"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedCrimeTypes.includes(crimeType.value)}
+                        onChange={() => handleCrimeTypeChange(crimeType.value)}
+                        disabled={loading}
+                        className={`w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2 touch-manipulation ${
+                          loading ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                      />
+                      <span
+                        className={`${loading ? "opacity-50" : ""} leading-tight`}
+                      >
+                        {crimeType.label}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+
+                {/* Show count of selected types */}
+                <div className="text-xs text-gray-300 mt-3 pt-2 border-t border-gray-600">
+                  {selectedCrimeTypes.length === 0
+                    ? "Showing all types"
+                    : `${selectedCrimeTypes.length} of ${CRIME_TYPES.length} selected`}
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Show count of selected types */}
-          <div className="text-xs text-gray-300 mt-1">
-            {selectedCrimeTypes.length === 0
-              ? "Showing all crime types"
-              : `Showing ${selectedCrimeTypes.length} of ${CRIME_TYPES.length} types`}
+          {/* Time Range Filter - Mobile (Collapsible, positioned below Nature of Call) */}
+          <div
+            className="absolute right-2 bg-black bg-opacity-80 text-white rounded-lg z-10 min-w-48 shadow-lg border border-gray-700 transition-all duration-300 ease-in-out"
+            style={{ top: isCrimeFilterOpen ? "320px" : "140px" }}
+          >
+            <button
+              onClick={() => setIsTimeFilterOpen(!isTimeFilterOpen)}
+              className="w-full px-3 py-2 text-sm font-semibold bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between touch-manipulation"
+            >
+              <span>Time Range</span>
+              <span className="text-xs font-bold">
+                {isTimeFilterOpen ? "▲" : "▼"}
+              </span>
+            </button>
+
+            {isTimeFilterOpen && (
+              <div className="p-3 border-t border-gray-600 bg-gray-800 rounded-b-lg">
+                <div className="grid grid-cols-2 gap-2">
+                  {Object.entries(TIME_RANGES).map(([value, label]) => (
+                    <button
+                      key={value}
+                      onClick={() => setTimeRange(value)}
+                      disabled={loading}
+                      className={`px-2 py-2 text-xs rounded-md transition-colors touch-manipulation ${
+                        timeRange === value
+                          ? "bg-blue-500 text-white font-semibold"
+                          : "bg-gray-700 hover:bg-gray-600"
+                      } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                {loading && (
+                  <div className="text-xs text-gray-300 mt-3 pt-2 border-t border-gray-600 text-center">
+                    Loading...
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-        </div>
-      </div>
+        </>
+      )}
 
       <div ref={mapContainer} className="map-container" />
     </div>
