@@ -40,6 +40,10 @@ function Map() {
   const [isMobile, setIsMobile] = useState(false);
   const [isTimeFilterOpen, setIsTimeFilterOpen] = useState(false);
   const [isCrimeFilterOpen, setIsCrimeFilterOpen] = useState(false);
+  const [isGeocoderOpen, setIsGeocoderOpen] = useState(false);
+  const [recentSearches, setRecentSearches] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
 
   // Function to fetch crime data from API
   const fetchCrimeData = useCallback(async (range, types = []) => {
@@ -82,17 +86,80 @@ function Map() {
     [fetchCrimeData],
   );
 
+  // Handle mobile geocoder search
+  const handleMobileSearch = useCallback(
+    async (query) => {
+      if (!query.trim()) {
+        setSearchResults([]);
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${mapboxToken}&bbox=-99.0,25.8,-93.5,36.5&proximity=${lng},${lat}&limit=5`,
+        );
+        const data = await response.json();
+        setSearchResults(data.features || []);
+      } catch (error) {
+        console.error("Search error:", error);
+        setSearchResults([]);
+      }
+    },
+    [lng, lat],
+  );
+
+  // Handle search result selection
+  const handleSearchResultSelect = useCallback((result) => {
+    const [longitude, latitude] = result.center;
+    map.current?.flyTo({
+      center: [longitude, latitude],
+      zoom: 14,
+      duration: 2000,
+    });
+
+    // Add to recent searches
+    const searchText = result.place_name;
+    setRecentSearches((prev) => {
+      const filtered = prev.filter((item) => item !== searchText);
+      return [searchText, ...filtered].slice(0, 5);
+    });
+
+    setIsGeocoderOpen(false);
+    setSearchQuery("");
+    setSearchResults([]);
+  }, []);
+
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery && isGeocoderOpen) {
+        handleMobileSearch(searchQuery);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, isGeocoderOpen, handleMobileSearch]);
+
   // Mobile detection
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
+      const mobile = window.innerWidth <= 768;
+      const wasNotMobile = isMobile === false;
+      setIsMobile(mobile);
+
+      // Set default states for mobile only on initial load or when switching to mobile
+      if (mobile && (wasNotMobile || isMobile === false)) {
+        setIsTimeFilterOpen(true); // Time filter expanded by default on mobile
+        setIsCrimeFilterOpen(false); // Crime filter collapsed by default on mobile
+        setIsGeocoderOpen(false); // Geocoder collapsed by default on mobile
+      }
     };
 
     checkMobile();
     window.addEventListener("resize", checkMobile);
 
     return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
     if (map.current) return;
@@ -201,7 +268,7 @@ function Map() {
       }
     });
 
-    // Add geocoder
+    // Add geocoder for desktop (will be hidden on mobile via CSS)
     const geocoder = new MapboxGeocoder({
       accessToken: mapboxToken,
       mapboxgl: mapboxgl,
@@ -213,10 +280,17 @@ function Map() {
       },
       marker: true, // We'll handle markers ourselves
     });
-
-    // Add geocoder to top-left for both mobile and desktop
     map.current.addControl(geocoder, "top-left");
-    map.current.addControl(new mapboxgl.NavigationControl(), "top-right");
+
+    // Add navigation controls based on device type
+    const navControl = new mapboxgl.NavigationControl({
+      showCompass: false,
+      showZoom: true,
+      visualizePitch: false,
+    });
+
+    // Always add controls, but they'll be hidden via CSS on mobile
+    map.current.addControl(navControl, "top-right");
 
     map.current.on("move", () => {
       setLng(map.current.getCenter().lng.toFixed(4));
@@ -355,8 +429,109 @@ function Map() {
             </div>
           )}
 
-          {/* Time Range Filter - Mobile (Collapsible, positioned below zoom controls) */}
-          <div className="absolute top-32 right-2 bg-black bg-opacity-80 text-white rounded-lg z-10 min-w-48 shadow-lg border border-gray-700">
+          {/* Collapsible Geocoder - Mobile (Centered) */}
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
+            {!isGeocoderOpen ? (
+              /* Collapsed State - Search Icon */
+              <button
+                onClick={() => setIsGeocoderOpen(true)}
+                className="bg-black bg-opacity-80 text-white p-3 rounded-full shadow-lg border border-gray-700 hover:bg-opacity-90 transition-all touch-manipulation"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </button>
+            ) : (
+              /* Expanded State - Search Bar */
+              <div className="bg-black bg-opacity-90 text-white rounded-lg shadow-lg border border-gray-700 min-w-80 max-w-sm">
+                <div className="flex items-center p-3">
+                  <input
+                    type="text"
+                    placeholder="Search for places..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="flex-1 bg-transparent text-white placeholder-gray-300 outline-none text-sm"
+                    autoFocus
+                  />
+                  <button
+                    onClick={() => {
+                      setIsGeocoderOpen(false);
+                      setSearchQuery("");
+                      setSearchResults([]);
+                    }}
+                    className="ml-2 text-gray-400 hover:text-white transition-colors"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Search Results */}
+                {searchResults.length > 0 && (
+                  <div className="border-t border-gray-600 max-h-48 overflow-y-auto">
+                    {searchResults.map((result, index) => (
+                      <div
+                        key={index}
+                        onClick={() => handleSearchResultSelect(result)}
+                        className="text-sm p-3 hover:bg-gray-700 border-b border-gray-700 last:border-b-0 cursor-pointer transition-colors"
+                      >
+                        <div className="font-medium text-white">
+                          {result.text}
+                        </div>
+                        <div className="text-xs text-gray-400 mt-1">
+                          {result.place_name}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Recent Searches */}
+                {searchResults.length === 0 &&
+                  recentSearches.length > 0 &&
+                  !searchQuery && (
+                    <div className="border-t border-gray-600 p-2">
+                      <div className="text-xs text-gray-400 mb-2">
+                        Recent searches:
+                      </div>
+                      {recentSearches.slice(0, 3).map((search, index) => (
+                        <div
+                          key={index}
+                          onClick={() => setSearchQuery(search)}
+                          className="text-sm p-2 hover:bg-gray-700 rounded cursor-pointer transition-colors"
+                        >
+                          {search}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+              </div>
+            )}
+          </div>
+
+          {/* Time Range Filter - Mobile (Left side, expanded by default) */}
+          <div className="absolute top-20 left-2 bg-black bg-opacity-80 text-white rounded-lg z-10 min-w-48 shadow-lg border border-gray-700">
             <button
               onClick={() => setIsTimeFilterOpen(!isTimeFilterOpen)}
               className="w-full px-3 py-2 text-sm font-semibold bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between touch-manipulation"
@@ -394,10 +569,10 @@ function Map() {
             )}
           </div>
 
-          {/* Nature of Call Filter - Mobile (Collapsible, positioned below Time Range) */}
+          {/* Nature of Call Filter - Mobile (Left side, below Time Range with spacing) */}
           <div
-            className="absolute right-2 bg-black bg-opacity-80 text-white rounded-lg z-10 min-w-48 shadow-lg border border-gray-700 transition-all duration-300 ease-in-out"
-            style={{ top: isTimeFilterOpen ? "200px" : "152px" }}
+            className="absolute left-2 bg-black bg-opacity-80 text-white rounded-lg z-10 min-w-48 shadow-lg border border-gray-700 transition-all duration-300 ease-in-out"
+            style={{ top: isTimeFilterOpen ? "280px" : "160px" }}
           >
             <button
               onClick={() => setIsCrimeFilterOpen(!isCrimeFilterOpen)}
@@ -457,6 +632,22 @@ function Map() {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Custom Zoom Controls - Mobile (Bottom-right, minimal) */}
+          <div className="absolute bottom-6 right-4 flex flex-col gap-2 z-10">
+            <button
+              onClick={() => map.current?.zoomIn()}
+              className="bg-black bg-opacity-60 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold hover:bg-opacity-80 transition-all touch-manipulation shadow-lg"
+            >
+              +
+            </button>
+            <button
+              onClick={() => map.current?.zoomOut()}
+              className="bg-black bg-opacity-60 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold hover:bg-opacity-80 transition-all touch-manipulation shadow-lg"
+            >
+              −
+            </button>
           </div>
         </>
       )}
