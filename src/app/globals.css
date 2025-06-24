@@ -360,16 +360,27 @@ input[type="checkbox"]:disabled {
         min-height: 500px;
     }
 
-    /* Geocoder responsive adjustments */
+    /* Geocoder responsive adjustments - positioned at top-left on mobile */
     .mapboxgl-ctrl-geocoder {
-        width: 200px !important;
+        width: 180px !important;
         font-size: 12px !important;
-        margin-top: 60px !important;
+        margin-top: 8px !important;
         margin-left: 8px !important;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 10;
     }
 
     .mapboxgl-ctrl-geocoder input[type="text"] {
         font-size: 12px !important;
+    }
+
+    /* Ensure geocoder stays at top-left */
+    .mapboxgl-ctrl-top-left .mapboxgl-ctrl-geocoder {
+        position: static;
+        margin-top: 8px;
+        margin-left: 0;
     }
 
     /* Mobile filter positioning adjustments */
@@ -385,6 +396,15 @@ input[type="checkbox"]:disabled {
     .mapboxgl-ctrl-top-right {
         margin-top: 16px;
         margin-right: 8px;
+    }
+
+    /* Additional spacing for mobile filters to avoid overlap */
+    .mobile-filter-spacing-top {
+        margin-top: 112px;
+    }
+
+    .mobile-filter-spacing-dynamic {
+        margin-top: 8px;
     }
 
     /* Mobile collapsible filter animations */
