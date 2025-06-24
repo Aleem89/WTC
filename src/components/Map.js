@@ -214,6 +214,7 @@ function Map() {
       marker: true, // We'll handle markers ourselves
     });
 
+    // Add geocoder to top-left for both mobile and desktop
     map.current.addControl(geocoder, "top-left");
     map.current.addControl(new mapboxgl.NavigationControl(), "top-right");
 
@@ -354,8 +355,50 @@ function Map() {
             </div>
           )}
 
-          {/* Nature of Call Filter - Mobile (Collapsible, positioned below zoom controls) */}
-          <div className="absolute top-20 right-2 bg-black bg-opacity-80 text-white rounded-lg z-10 min-w-48 shadow-lg border border-gray-700">
+          {/* Time Range Filter - Mobile (Collapsible, positioned below zoom controls) */}
+          <div className="absolute top-32 right-2 bg-black bg-opacity-80 text-white rounded-lg z-10 min-w-48 shadow-lg border border-gray-700">
+            <button
+              onClick={() => setIsTimeFilterOpen(!isTimeFilterOpen)}
+              className="w-full px-3 py-2 text-sm font-semibold bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between touch-manipulation"
+            >
+              <span>Time Range</span>
+              <span className="text-xs font-bold">
+                {isTimeFilterOpen ? "▲" : "▼"}
+              </span>
+            </button>
+
+            {isTimeFilterOpen && (
+              <div className="p-3 border-t border-gray-600 bg-gray-800 rounded-b-lg">
+                <div className="grid grid-cols-2 gap-2">
+                  {Object.entries(TIME_RANGES).map(([value, label]) => (
+                    <button
+                      key={value}
+                      onClick={() => setTimeRange(value)}
+                      disabled={loading}
+                      className={`px-2 py-2 text-xs rounded-md transition-colors touch-manipulation ${
+                        timeRange === value
+                          ? "bg-blue-500 text-white font-semibold"
+                          : "bg-gray-700 hover:bg-gray-600"
+                      } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                {loading && (
+                  <div className="text-xs text-gray-300 mt-3 pt-2 border-t border-gray-600 text-center">
+                    Loading...
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Nature of Call Filter - Mobile (Collapsible, positioned below Time Range) */}
+          <div
+            className="absolute right-2 bg-black bg-opacity-80 text-white rounded-lg z-10 min-w-48 shadow-lg border border-gray-700 transition-all duration-300 ease-in-out"
+            style={{ top: isTimeFilterOpen ? "200px" : "152px" }}
+          >
             <button
               onClick={() => setIsCrimeFilterOpen(!isCrimeFilterOpen)}
               className="w-full px-3 py-2 text-sm font-semibold bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between touch-manipulation"
@@ -412,48 +455,6 @@ function Map() {
                     ? "Showing all types"
                     : `${selectedCrimeTypes.length} of ${CRIME_TYPES.length} selected`}
                 </div>
-              </div>
-            )}
-          </div>
-
-          {/* Time Range Filter - Mobile (Collapsible, positioned below Nature of Call) */}
-          <div
-            className="absolute right-2 bg-black bg-opacity-80 text-white rounded-lg z-10 min-w-48 shadow-lg border border-gray-700 transition-all duration-300 ease-in-out"
-            style={{ top: isCrimeFilterOpen ? "320px" : "140px" }}
-          >
-            <button
-              onClick={() => setIsTimeFilterOpen(!isTimeFilterOpen)}
-              className="w-full px-3 py-2 text-sm font-semibold bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between touch-manipulation"
-            >
-              <span>Time Range</span>
-              <span className="text-xs font-bold">
-                {isTimeFilterOpen ? "▲" : "▼"}
-              </span>
-            </button>
-
-            {isTimeFilterOpen && (
-              <div className="p-3 border-t border-gray-600 bg-gray-800 rounded-b-lg">
-                <div className="grid grid-cols-2 gap-2">
-                  {Object.entries(TIME_RANGES).map(([value, label]) => (
-                    <button
-                      key={value}
-                      onClick={() => setTimeRange(value)}
-                      disabled={loading}
-                      className={`px-2 py-2 text-xs rounded-md transition-colors touch-manipulation ${
-                        timeRange === value
-                          ? "bg-blue-500 text-white font-semibold"
-                          : "bg-gray-700 hover:bg-gray-600"
-                      } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-                {loading && (
-                  <div className="text-xs text-gray-300 mt-3 pt-2 border-t border-gray-600 text-center">
-                    Loading...
-                  </div>
-                )}
               </div>
             )}
           </div>
