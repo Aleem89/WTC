@@ -360,51 +360,67 @@ input[type="checkbox"]:disabled {
         min-height: 500px;
     }
 
-    /* Geocoder responsive adjustments - positioned at top-left on mobile */
+    /* Hide default geocoder on mobile - we use custom collapsible one */
     .mapboxgl-ctrl-geocoder {
-        width: 180px !important;
-        font-size: 12px !important;
-        margin-top: 8px !important;
-        margin-left: 8px !important;
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 10;
+        display: none !important;
     }
 
-    .mapboxgl-ctrl-geocoder input[type="text"] {
-        font-size: 12px !important;
+    /* Mobile collapsible geocoder styling */
+    .mobile-geocoder-collapsed {
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     }
 
-    /* Ensure geocoder stays at top-left */
-    .mapboxgl-ctrl-top-left .mapboxgl-ctrl-geocoder {
-        position: static;
-        margin-top: 8px;
-        margin-left: 0;
+    .mobile-geocoder-expanded {
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+        animation: slideDown 0.3s ease-out;
     }
 
-    /* Mobile filter positioning adjustments */
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px) translateX(-50%);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) translateX(-50%);
+        }
+    }
+
+    /* Mobile filter positioning adjustments - moved to left side */
     .mobile-filter-container {
         position: absolute;
-        right: 8px;
+        left: 8px;
         z-index: 10;
         max-width: 200px;
         min-width: 180px;
     }
 
-    /* Ensure mobile filters don't overlap with map controls */
+    /* Hide default map controls on mobile */
     .mapboxgl-ctrl-top-right {
-        margin-top: 16px;
-        margin-right: 8px;
+        display: none !important;
     }
 
-    /* Additional spacing for mobile filters to avoid overlap */
-    .mobile-filter-spacing-top {
-        margin-top: 112px;
+    /* Custom mobile zoom controls */
+    .mobile-zoom-controls {
+        position: absolute;
+        bottom: 24px;
+        right: 16px;
+        z-index: 15;
     }
 
-    .mobile-filter-spacing-dynamic {
-        margin-top: 8px;
+    .mobile-zoom-btn {
+        backdrop-filter: blur(8px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        transition: all 0.2s ease;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .mobile-zoom-btn:active {
+        transform: scale(0.95);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
     }
 
     /* Mobile collapsible filter animations */
@@ -483,5 +499,48 @@ input[type="checkbox"]:disabled {
     .mobile-filter-viewport {
         max-height: 60vh;
         overflow-y: auto;
+    }
+
+    /* Mobile geocoder search input styling */
+    .mobile-geocoder-input {
+        background: transparent;
+        border: none;
+        outline: none;
+        color: white;
+        font-size: 14px;
+        width: 100%;
+    }
+
+    .mobile-geocoder-input::placeholder {
+        color: #9ca3af;
+    }
+
+    /* Mobile recent searches styling */
+    .mobile-recent-search-item {
+        padding: 8px 12px;
+        font-size: 13px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        touch-action: manipulation;
+    }
+
+    .mobile-recent-search-item:hover,
+    .mobile-recent-search-item:active {
+        background-color: rgba(75, 85, 99, 0.4);
+    }
+
+    /* Improved mobile filter overlap prevention */
+    .mobile-filter-no-overlap {
+        position: absolute;
+        left: 8px;
+        z-index: 10;
+        min-width: 192px;
+        max-width: calc(100vw - 32px);
+    }
+
+    /* Enable pinch-to-zoom gestures */
+    .map-container {
+        touch-action: pan-x pan-y pinch-zoom;
     }
 }
