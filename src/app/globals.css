@@ -375,26 +375,58 @@ input[type="checkbox"]:disabled {
         backdrop-filter: blur(10px);
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
         animation: slideDown 0.3s ease-out;
+        min-width: 280px;
+        max-width: calc(100vw - 32px);
     }
 
     @keyframes slideDown {
         from {
             opacity: 0;
-            transform: translateY(-10px) translateX(-50%);
+            transform: translateY(-10px);
         }
         to {
             opacity: 1;
-            transform: translateY(0) translateX(-50%);
+            transform: translateY(0);
         }
     }
 
-    /* Mobile filter positioning adjustments - moved to left side */
-    .mobile-filter-container {
-        position: absolute;
-        left: 8px;
-        z-index: 10;
-        max-width: 200px;
-        min-width: 180px;
+    /* Mobile Floating Action Button (FAB) for filters */
+    .mobile-fab {
+        backdrop-filter: blur(8px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .mobile-fab:hover {
+        transform: scale(1.05);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+    }
+
+    .mobile-fab:active {
+        transform: scale(0.95);
+    }
+
+    /* Mobile filters overlay panel */
+    .mobile-filters-overlay {
+        backdrop-filter: blur(10px);
+        animation: slideUp 0.3s ease-out;
+    }
+
+    .mobile-filters-panel {
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
+        border-top: 1px solid rgba(75, 85, 99, 0.3);
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(100%);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     /* Hide default map controls on mobile */
@@ -542,5 +574,73 @@ input[type="checkbox"]:disabled {
     /* Enable pinch-to-zoom gestures */
     .map-container {
         touch-action: pan-x pan-y pinch-zoom;
+    }
+
+    /* Mobile filters panel styling improvements */
+    .mobile-filter-section {
+        padding: 16px 0;
+        border-bottom: 1px solid rgba(75, 85, 99, 0.2);
+    }
+
+    .mobile-filter-section:last-child {
+        border-bottom: none;
+    }
+
+    .mobile-filter-title {
+        color: #f9fafb;
+        font-weight: 600;
+        margin-bottom: 12px;
+        font-size: 14px;
+    }
+
+    .mobile-filter-button {
+        touch-action: manipulation;
+        transition: all 0.2s ease;
+        font-weight: 500;
+    }
+
+    .mobile-filter-button:active {
+        transform: scale(0.98);
+    }
+
+    /* Mobile checkbox improvements */
+    .mobile-checkbox-label {
+        touch-action: manipulation;
+        padding: 8px 0;
+        transition: background-color 0.2s ease;
+        border-radius: 6px;
+        margin: 0 -8px;
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .mobile-checkbox-label:active {
+        background-color: rgba(75, 85, 99, 0.2);
+    }
+
+    /* Improved mobile search results */
+    .mobile-search-result {
+        touch-action: manipulation;
+        transition: all 0.2s ease;
+    }
+
+    .mobile-search-result:active {
+        transform: scale(0.98);
+        background-color: rgba(75, 85, 99, 0.4) !important;
+    }
+
+    /* Mobile overlay backdrop improvements */
+    .mobile-overlay-backdrop {
+        backdrop-filter: blur(4px);
+        animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
     }
 }
