@@ -61,6 +61,10 @@ export default function Home() {
                   <p className="text-gray-400 text-sm">
                     Click on markers for detailed incident information
                   </p>
+                  <p className="text-blue-400 text-sm md:hidden mt-1">
+                    Click the blue filter button in the bottom right to filter
+                    by Time Range and Crime Type
+                  </p>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
@@ -138,7 +142,7 @@ export default function Home() {
               Data sourced from public records and law enforcement agencies
             </p>
             <p className="text-gray-500 text-xs">
-              Last updated: 6/15/2025 • For informational purposes only
+              Data Last updated: 6/22/2025 • For informational purposes only
             </p>
           </div>
         </div>
