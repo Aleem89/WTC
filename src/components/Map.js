@@ -550,7 +550,7 @@ function Map() {
           </div>
 
           {/* Filters FAB - Mobile (Bottom-right, above zoom controls) */}
-          <div className="absolute bottom-24 right-4 z-10">
+          <div className="absolute bottom-32 right-4 z-10">
             <button
               onClick={() => setIsFiltersOpen(!isFiltersOpen)}
               className="bg-blue-600 hover:bg-blue-700 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all touch-manipulation animate-pulse-glow"
