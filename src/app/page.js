@@ -59,11 +59,7 @@ export default function Home() {
                     Interactive Crime Map
                   </h2>
                   <p className="text-gray-400 text-sm">
-                    Click on markers for detailed incident information
-                  </p>
-                  <p className="text-blue-400 text-sm md:hidden mt-1">
-                    Click the blue filter button in the bottom right to filter
-                    by Time Range and Crime Type
+                    Click on markers for detailed incident information.
                   </p>
                 </div>
                 <div className="flex items-center space-x-2">
