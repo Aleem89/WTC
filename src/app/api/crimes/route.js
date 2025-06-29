@@ -1,15 +1,13 @@
-// API Route to fetch crime data from SQLite database (App Router)
+// API Route to fetch crime data from Turso database (App Router)
 
-import sqlite3 from "sqlite3";
-import { open } from "sqlite";
-import path from "path";
+import { createClient } from "@libsql/client";
 import { NextRequest, NextResponse } from "next/server";
 
 // Database connection
-async function openDb() {
-  return open({
-    filename: path.join(process.cwd(), "crime_data.db"),
-    driver: sqlite3.Database,
+function createTursoClient() {
+  return createClient({
+    url: process.env.turso_url,
+    authToken: process.env.turso_token,
   });
 }
 
@@ -19,6 +17,9 @@ function getDateRange(range) {
   const startDate = new Date();
 
   switch (range) {
+    case "2W":
+      startDate.setDate(endDate.getDate() - 14);
+      break;
     case "1M":
       startDate.setMonth(endDate.getMonth() - 1);
       break;
@@ -32,7 +33,7 @@ function getDateRange(range) {
       startDate.setFullYear(endDate.getFullYear() - 1);
       break;
     default:
-      startDate.setMonth(endDate.getMonth() - 1);
+      startDate.setDate(endDate.getDate() - 14);
   }
 
   return [startDate.toISOString(), endDate.toISOString()];
@@ -40,12 +41,13 @@ function getDateRange(range) {
 
 // GET handler for App Router
 export async function GET(request) {
+  const client = createTursoClient();
+
   try {
     const { searchParams } = new URL(request.url);
     const timeRange = searchParams.get("timeRange") || "1M";
     const crimeTypes = searchParams.get("crimeTypes");
 
-    const db = await openDb();
     const [startDate, endDate] = getDateRange(timeRange);
 
     // Build the query based on crime type filters
@@ -109,14 +111,15 @@ export async function GET(request) {
     query += ` ORDER BY reported_date DESC`;
 
     // Query crime data within date range and with valid coordinates
-    const crimes = await db.all(query, queryParams);
-
-    await db.close();
+    const result = await client.execute({
+      sql: query,
+      args: queryParams,
+    });
 
     // Convert to GeoJSON format for Mapbox
     const geojson = {
       type: "FeatureCollection",
-      features: crimes.map((crime) => ({
+      features: result.rows.map((crime) => ({
         type: "Feature",
         geometry: {
           type: "Point",
@@ -149,5 +152,8 @@ export async function GET(request) {
       { message: "Internal server error", error: error.message },
       { status: 500 },
     );
+  } finally {
+    // Close the client connection
+    client.close();
   }
 }
