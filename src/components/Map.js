@@ -11,6 +11,7 @@ mapboxgl.accessToken = mapboxToken;
 
 // Time range options
 const TIME_RANGES = {
+  "2W": "2 Weeks",
   "1M": "1 Month",
   "3M": "3 Months",
   "6M": "6 Months",
@@ -33,7 +34,7 @@ function Map() {
   const [lng, setLng] = useState(-97.32);
   const [lat, setLat] = useState(32.72541);
   const [zoom, setZoom] = useState(9);
-  const [timeRange, setTimeRange] = useState("1M");
+  const [timeRange, setTimeRange] = useState("2W");
   const [selectedCrimeTypes, setSelectedCrimeTypes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
